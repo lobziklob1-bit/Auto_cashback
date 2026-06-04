@@ -1,5 +1,4 @@
 {
-  "kind": "column",
   "name": "Parse Report Month",
   "description": "Extracts month name from encoded JSON string",
   "params": [

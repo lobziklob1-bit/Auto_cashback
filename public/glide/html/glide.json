@@ -1,5 +1,4 @@
 {
-  "kind": "column",
   "name": "Parse Report HTML",
   "description": "Extracts HTML table from encoded JSON string",
   "params": [
