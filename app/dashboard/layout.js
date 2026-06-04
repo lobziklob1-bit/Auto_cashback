@@ -98,21 +98,11 @@ export default function DashboardLayout({ children }) {
 
             {!profile?.isAdmin && (
               <button
+                className={styles.adminHeaderBtn}
                 onClick={handleMakeAdmin}
-                style={{
-                  border: 'none',
-                  background: 'rgba(59, 130, 246, 0.1)',
-                  color: '#3b82f6',
-                  borderRadius: '6px',
-                  padding: '6px 10px',
-                  fontSize: '11px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
                 id="header-make-admin"
               >
-                🔑 Админ
+                <span>🔑</span> <span className={styles.btnText}>Админ</span>
               </button>
             )}
 
@@ -121,7 +111,7 @@ export default function DashboardLayout({ children }) {
               onClick={handleLogout}
               id="header-logout"
             >
-              🚪 Выйти
+              <span>🚪</span> <span className={styles.btnText}>Выйти</span>
             </button>
           </div>
         </header>

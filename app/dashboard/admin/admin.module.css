@@ -410,3 +410,50 @@
   font-size: 0.95rem;
   line-height: 1.5;
 }
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.4rem;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
+  }
+  
+  .mainCard {
+    padding: 16px 12px;
+  }
+  
+  .tableWrapper {
+    margin: 0 -12px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 10px 8px;
+    font-size: 12.5px;
+  }
+  
+  .logoSelect {
+    font-size: 16px;
+    padding: 2px 4px;
+  }
+  
+  .updateBtn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .table th,
+  .table td {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+  
+  .updateBtn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+}

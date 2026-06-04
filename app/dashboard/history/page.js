@@ -152,7 +152,7 @@ export default function HistoryPage() {
       <div className={styles.header}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 className={styles.title}>История рекомендаций 📜</h1>
+            <h1 className={styles.title}>История 📜</h1>
             <p className={styles.subtitle}>
               Список всех ваших прошлых ежемесячных отчётов и сохраненных выборов.
             </p>

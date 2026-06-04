@@ -535,7 +535,7 @@ export default function ReportPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+        <div className={styles.actionButtons}>
           <button 
             className="btn btn-secondary"
             onClick={handleRecalculateReport}
@@ -574,7 +574,7 @@ export default function ReportPage() {
       </div>
 
       {isConfirmed && (
-        <div className="badge badge-success" style={{ width: '100%', padding: '12px', justifyContent: 'center', borderRadius: '12px', marginBottom: '24px', fontSize: '14px' }}>
+        <div className="badge badge-success" style={{ width: '100%', padding: '12px', justifyContent: 'center', borderRadius: '12px', marginBottom: '24px', fontSize: '14px', whiteSpace: 'normal', textAlign: 'center' }}>
           🎉 Категории успешно активированы! ИИ теперь учитывает этот выбор при ответах в чате.
         </div>
       )}

@@ -327,7 +327,6 @@ export default function AdminPage() {
               <thead>
                 <tr>
                   <th>Банк</th>
-                  <th>MCC-link</th>
                   <th>Лимит</th>
                   <th style={{ textAlign: 'right' }}></th>
                 </tr>
@@ -380,29 +379,33 @@ export default function AdminPage() {
                             >
                               {bank.name}
                             </span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                              <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>ИНН:</span>
-                              <input
-                                type="text"
-                                className={styles.innInput}
-                                style={{ width: '105px', fontSize: '11px', padding: '2px 6px', height: '22px' }}
-                                value={currentEdits.inn}
-                                onChange={(e) => handleInputChange(bank.id, 'inn', e.target.value)}
-                                placeholder="ИНН"
-                                maxLength={12}
-                              />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ fontSize: '10px', color: 'var(--text-muted)', width: '28px', flexShrink: 0 }}>ИНН:</span>
+                                <input
+                                  type="text"
+                                  className={styles.innInput}
+                                  style={{ width: '105px', fontSize: '11px', padding: '2px 6px', height: '22px' }}
+                                  value={currentEdits.inn}
+                                  onChange={(e) => handleInputChange(bank.id, 'inn', e.target.value)}
+                                  placeholder="ИНН"
+                                  maxLength={12}
+                                />
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <span style={{ fontSize: '10px', color: 'var(--text-muted)', width: '28px', flexShrink: 0 }}>MCC:</span>
+                                <input
+                                  type="text"
+                                  className={styles.urlInput}
+                                  style={{ fontSize: '11px', padding: '2px 6px', height: '22px', width: '100%', maxWidth: '160px' }}
+                                  value={currentEdits.mccUrl}
+                                  onChange={(e) => handleInputChange(bank.id, 'mccUrl', e.target.value)}
+                                  placeholder="Ссылка на MCC"
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="text"
-                          className={styles.urlInput}
-                          value={currentEdits.mccUrl}
-                          onChange={(e) => handleInputChange(bank.id, 'mccUrl', e.target.value)}
-                          placeholder="https://..."
-                        />
                       </td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <input
