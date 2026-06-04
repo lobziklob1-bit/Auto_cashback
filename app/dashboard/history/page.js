@@ -139,6 +139,97 @@ export default function HistoryPage() {
       });
   };
 
+  const generateReportHtml = (report) => {
+    const groups = getGroups(report);
+    let html = `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 12px; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; max-width: 480px; margin: 0 auto;">`;
+    html += `<h3 style="margin: 0 0 12px 0; font-size: 15px; color: #1e293b; text-align: center; font-weight: 700;">Отчет по кешбэку за ${report.monthName}</h3>`;
+    html += `<table style="width: 100%; border-collapse: collapse; font-size: 12px;">`;
+    html += `<thead><tr style="border-bottom: 2px solid #e2e8f0; color: #64748b;"><th style="padding: 6px 4px; text-align: left; font-weight: 600;">Банк</th><th style="padding: 6px 4px; text-align: left; font-weight: 600;">Карта и Категории</th></tr></thead><tbody>`;
+    
+    Object.entries(groups).forEach(([bankName, cards]) => {
+      cards.forEach((card, idx) => {
+        const cardName = card.customName || "Основная карта";
+        const categoriesText = card.categories && card.categories.length > 0 
+          ? card.categories.map(cat => `<span style="background: #eff6ff; color: #1d4ed8; padding: 2px 5px; border-radius: 4px; font-size: 10.5px; font-weight: 600; display: inline-block; margin: 2px 1px;">${cat.percent}% ${cat.name}</span>`).join(' ')
+          : `<span style="color: #94a3b8; font-size: 10.5px;">Нет категорий</span>`;
+        
+        html += `<tr style="border-bottom: 1px solid #f1f5f9;">`;
+        if (idx === 0) {
+          html += `<td rowspan="${cards.length}" style="padding: 8px 4px; font-weight: 700; color: #0f172a; vertical-align: top; width: 35%;">${card.logo} ${bankName}</td>`;
+        }
+        html += `<td style="padding: 8px 4px;"><div style="font-weight: 600; color: #334155; margin-bottom: 3px; font-size: 11.5px;">💳 ${cardName}</div><div>${categoriesText}</div></td>`;
+        html += `</tr>`;
+      });
+    });
+    
+    html += `</tbody></table></div>`;
+    return html;
+  };
+
+  const handleImportToGlide = (report) => {
+    if (!report) return;
+
+    // Ссылка по умолчанию
+    const defaultUrl = 'https://family-budjet.glide.page/dl/27b7a0/s/6054bd/r/4CgpZ6LtS8ubaGmLwYg.uQ';
+    
+    // Пытаемся получить сохраненную ссылку, если её нет — используем дефолтную
+    let glideUrl = localStorage.getItem('glide_app_url') || defaultUrl;
+
+    // Даем пользователю возможность подтвердить/изменить ссылку
+    const confirmChange = confirm(`Импортировать отчет за ${report.monthName} в Glide CRM?\n\nИспользуется ссылка:\n${glideUrl}\n\n(Чтобы изменить ссылку, нажмите Отмена, и в следующем окне введите новую. Для продолжения нажмите ОК)`);
+    
+    if (!confirmChange) {
+      const newUrl = prompt('Введите новый URL страницы импорта Glide CRM:', glideUrl);
+      if (newUrl && newUrl.trim()) {
+        glideUrl = newUrl.trim();
+        localStorage.setItem('glide_app_url', glideUrl);
+      } else {
+        return; // Отмена импорта
+      }
+    }
+
+    // Собираем TSV для передачи
+    const groups = getGroups(report);
+    const maxCardsCount = Math.max(...Object.values(groups).map(g => g.length), 1);
+    let tsvContent = '';
+    Object.entries(groups).forEach(([bankName, cards]) => {
+      let row = `"${bankName.replace(/"/g, '""')}"`;
+      for (let i = 0; i < maxCardsCount; i++) {
+        const card = cards[i];
+        if (card) {
+          let cardCell = `${card.customName}\n`;
+          if (card.categories && card.categories.length > 0) {
+            cardCell += card.categories.map(cat => `${cat.percent}% ${cat.name}`).join('\n');
+          } else {
+            cardCell += 'Нет выбранных категорий';
+          }
+          row += `\t"${cardCell.replace(/"/g, '""')}"`;
+        } else {
+          row += '\t""';
+        }
+      }
+      tsvContent += row + '\n';
+    });
+
+    // Формируем JSON-пакет данных
+    const reportData = {
+      month: report.monthName || "Отчет",
+      html: generateReportHtml(report),
+      tsv: tsvContent
+    };
+
+    // Кодируем JSON для безопасной передачи в URL
+    const encodedJson = encodeURIComponent(JSON.stringify(reportData));
+    
+    // Формируем итоговую ссылку
+    const separator = glideUrl.includes('?') ? '&' : '?';
+    const finalUrl = `${glideUrl}${separator}report_data=${encodedJson}`;
+
+    // Перенаправляем пользователя
+    window.open(finalUrl, '_blank');
+    showNotification('Перенаправление в Glide CRM... 🚀', 'success');
+  };
+
   if (loading) {
     return (
       <div className="spinner-overlay">
@@ -307,11 +398,20 @@ export default function HistoryPage() {
                       🗑️ Удалить
                     </button>
                     <button 
-                      className="btn btn-primary btn-sm"
+                      className="btn btn-secondary btn-sm"
                       onClick={() => handleCopyToClipboard(report)}
                       style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: 'auto' }}
+                      title="Скопировать TSV-таблицу для ручной вставки в CRM Glide (на ПК)"
                     >
-                      📋 Скопировать для CRM / Glide
+                      📋 Копировать TSV
+                    </button>
+                    <button 
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleImportToGlide(report)}
+                      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                      title="Импортировать отчет напрямую в мобильное приложение Glide"
+                    >
+                      📤 Импорт в Glide CRM
                     </button>
                   </div>
                 </>
