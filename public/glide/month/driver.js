@@ -3,7 +3,9 @@ window.addEventListener("message", function(event) {
   let result = "";
   
   try {
-    const p1 = params[0];
+    const p1Raw = params && params[0];
+    const p1 = (p1Raw && typeof p1Raw === 'object' && 'value' in p1Raw) ? p1Raw.value : p1Raw;
+    
     if (p1) {
       const data = JSON.parse(p1);
       result = data.month || "";

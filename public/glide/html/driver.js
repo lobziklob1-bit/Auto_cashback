@@ -1,12 +1,13 @@
 window.addEventListener("message", function(event) {
-  // Проверяем, что в сообщении есть нужная структура данных
   const { origin, data: { key, params } } = event;
   let result = "";
   
   try {
-    const p1 = params[0];
+    const p1Raw = params && params[0];
+    // Поддерживаем как объект { value: ... }, так и прямую строку
+    const p1 = (p1Raw && typeof p1Raw === 'object' && 'value' in p1Raw) ? p1Raw.value : p1Raw;
+    
     if (p1) {
-      // Пытаемся распарсить JSON, который передан из URL-параметра report_data
       const data = JSON.parse(p1);
       result = data.html || "";
     }
@@ -14,6 +15,5 @@ window.addEventListener("message", function(event) {
     result = "";
   }
   
-  // Возвращаем результат обратно в Glide
   event.source.postMessage({ key, result }, "*");
 });
