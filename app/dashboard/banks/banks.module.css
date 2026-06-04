@@ -1,0 +1,167 @@
+.container {
+  padding: var(--space-4);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+}
+
+.content {
+  display: block;
+}
+
+@media (max-width: 1024px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bankList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.bankCard {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 5px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1.2fr 2.5fr 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.bankCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.bankMain {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.bankLogo {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bankInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bankName {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.priorityBadge {
+  font-size: 10px;
+  color: var(--color-primary);
+  background-color: var(--bg-blue-light);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  font-weight: var(--weight-medium);
+  width: fit-content;
+}
+
+.bankFields {
+  display: flex;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.arrows {
+  display: flex;
+  gap: 2px;
+}
+
+@media (max-width: 768px) {
+  .bankCard {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding: 12px;
+  }
+  
+  .bankFields {
+    flex-direction: row;
+  }
+
+  .actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+.modalBankItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-card);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all var(--transition-base);
+}
+
+.modalBankItem:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--color-primary-light);
+  transform: translateX(4px);
+}
+
+

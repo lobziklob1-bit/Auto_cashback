@@ -1,0 +1,320 @@
+/* ============================================
+   Dashboard Overview Styles
+   ============================================ */
+
+.overview {
+  max-width: 1000px;
+  animation: fadeIn var(--transition-base);
+}
+
+/* Greeting */
+.greeting {
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: slideUp 0.6s ease-out forwards;
+}
+
+.greetingTitle {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.greetingSubtitle {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   Stats Grid
+   ============================================ */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.statsGridAdmin {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.statCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 24px 20px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-base);
+  opacity: 0;
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.statCard:nth-child(1) { animation-delay: 0.1s; }
+.statCard:nth-child(2) { animation-delay: 0.2s; }
+.statCard:nth-child(3) { animation-delay: 0.3s; }
+.statCard:nth-child(4) { animation-delay: 0.4s; }
+
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.statIcon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ============================================
+   Quick Actions
+   ============================================ */
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: slideUp 0.5s ease-out 0.45s forwards;
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.actionCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-slow);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  opacity: 0;
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.actionCard:nth-child(1) { animation-delay: 0.5s; }
+.actionCard:nth-child(2) { animation-delay: 0.6s; }
+
+.actionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.actionIcon {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.actionContent {
+  flex: 1;
+}
+
+.actionTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.actionDesc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.actionArrow {
+  font-size: 20px;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  align-self: center;
+}
+
+.actionCard:hover .actionArrow {
+  color: var(--color-primary);
+  transform: translateX(4px);
+}
+
+/* ============================================
+   Summary Card
+   ============================================ */
+
+.summaryCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-card);
+  opacity: 0;
+  animation: slideUp 0.5s ease-out 0.7s forwards;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.summaryTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summaryBadge {
+  padding: 4px 12px;
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.summaryEmpty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.summaryEmptyIcon {
+  font-size: 36px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+
+@media (max-width: 900px) {
+  .statsGrid, .statsGridAdmin {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .statsGrid, .statsGridAdmin {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .quickActions {
+    grid-template-columns: 1fr;
+  }
+
+  .greetingTitle {
+    font-size: 1.5rem;
+  }
+
+  .statCard {
+    padding: 20px 16px;
+  }
+
+  .statValue {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .statCard {
+    padding: 16px 14px;
+  }
+
+  .statValue {
+    font-size: 1.3rem;
+  }
+
+  .statIcon {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+}
+
+/* Local keyframes for CSS module animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reportTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: var(--text-sm);
+  background-color: var(--bg-card);
+}
+
+.reportTable th {
+  background-color: var(--divider-color);
+  color: var(--text-secondary);
+  font-weight: var(--weight-semibold);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.reportTable td {
+  padding: 16px;
+  border-bottom: 1px solid var(--divider-color);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.reportTable tr:last-child td {
+  border-bottom: none;
+}
+
