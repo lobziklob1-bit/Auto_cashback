@@ -1,0 +1,15 @@
+{
+  "kind": "column",
+  "name": "Parse Report Month",
+  "description": "Extracts month name from encoded JSON string",
+  "params": [
+    {
+      "name": "p1",
+      "displayName": "JSON String",
+      "type": "string"
+    }
+  ],
+  "result": {
+    "type": "string"
+  }
+}
