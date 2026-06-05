@@ -1,17 +1,14 @@
-[
-  {
-    "kind": "column",
-    "name": "Parse Report HTML",
-    "description": "Extracts HTML table from encoded JSON string",
-    "params": [
-      {
-        "name": "p1",
-        "displayName": "JSON String",
-        "type": "string"
-      }
-    ],
-    "result": {
+{
+  "name": "Parse Report HTML",
+  "description": "Extracts HTML table from encoded JSON string",
+  "params": [
+    {
+      "name": "p1",
+      "displayName": "JSON String",
       "type": "string"
     }
+  ],
+  "result": {
+    "type": "string"
   }
-]
+}
