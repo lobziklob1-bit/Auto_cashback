@@ -376,82 +376,137 @@ export default function DashboardPage() {
                 }
               });
 
+              const maxCardsCount = Math.max(...Object.values(groups).map(g => g.length), 1);
+
               return (
-                <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border-color)', marginTop: '12px' }}>
-                  <table className={styles.reportTable}>
-                    <thead>
-                      <tr style={{ borderBottom: '2px solid var(--border-color)', color: 'var(--text-secondary)' }}>
-                        <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', fontSize: '13px', background: 'var(--bg-primary)' }}>Банк</th>
-                        <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', fontSize: '13px' }}>Карта и Категории</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(filteredGroups).map(([bankName, cards]) => (
-                        cards.map((card, idx) => {
-                          const cardName = card.customName || "Основная карта";
-                          const logo = card.logo || "🏦";
-                          return (
-                            <tr key={`${bankName}-${card.cardId || idx}`} style={{ borderBottom: '1px solid var(--divider-color)' }}>
-                              {idx === 0 && (
-                                <td 
-                                  rowSpan={cards.length} 
-                                  style={{ 
-                                    padding: '12px 12px', 
-                                    fontWeight: '700', 
-                                    color: 'var(--text-primary)', 
-                                    verticalAlign: 'top', 
-                                    width: '35%',
-                                    background: 'var(--bg-primary)'
-                                  }}
-                                >
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                                    <span style={{ fontSize: '18px' }}>{logo}</span>
-                                    <span>{bankName}</span>
+                <>
+                  {/* Desktop version - Horizontal cards */}
+                  <div className={styles.desktopReport} style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border-color)', marginTop: '12px' }}>
+                    <table className={styles.reportTable}>
+                      <tbody>
+                        {Object.entries(filteredGroups).map(([bankName, cards], rowIdx) => (
+                          <tr key={rowIdx}>
+                            <td style={{ verticalAlign: 'middle', background: 'var(--bg-primary)' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
+                                <span style={{ fontSize: '20px' }}>{cards[0]?.logo}</span>
+                                <span>{bankName}</span>
+                              </div>
+                            </td>
+                            {Array.from({ length: maxCardsCount }).map((_, colIdx) => {
+                              const card = cards[colIdx];
+                              if (!card) {
+                                return <td key={colIdx} style={{ background: '#f8fafc', color: 'var(--text-muted)', textAlign: 'center', verticalAlign: 'middle' }}>—</td>;
+                              }
+                              return (
+                                <td key={colIdx} style={{ verticalAlign: 'top', borderLeft: `4px solid ${card.color}` }}>
+                                  <div style={{ fontWeight: 'bold', marginBottom: '8px', color: 'var(--text-primary)', fontSize: '13px' }}>
+                                    {card.customName}
                                   </div>
-                                </td>
-                              )}
-                              <td style={{ padding: '12px 12px', verticalAlign: 'top', borderLeft: `4px solid ${card.color || 'var(--color-primary)'}` }}>
-                                <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px', fontSize: '13px' }}>
-                                  💳 {cardName}
-                                </div>
-                                <div>
                                   {card.categories && card.categories.length > 0 ? (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-start' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                                       {card.categories.map((cat, catIdx) => (
-                                        <div key={catIdx} style={{ margin: '2px 0' }}>
-                                          <span style={{ 
-                                            background: '#eff6ff', 
-                                            color: '#1d4ed8', 
-                                            padding: '3px 8px', 
-                                            borderRadius: '6px', 
-                                            fontSize: '11px', 
-                                            fontWeight: '600', 
-                                            display: 'inline-block' 
-                                          }}>
-                                            {cat.percent}% {cat.name}
-                                          </span>
+                                        <div key={catIdx} style={{ fontSize: '12px', display: 'flex', justifyContent: 'space-between', gap: '16px', borderBottom: '1px dashed var(--divider-color)', paddingBottom: '2px' }}>
+                                          <span style={{ color: 'var(--text-secondary)' }}>{cat.name}</span>
+                                          <strong style={{ color: 'var(--color-primary)', whiteSpace: 'nowrap' }}>{cat.percent}%</strong>
                                         </div>
                                       ))}
                                     </div>
                                   ) : (
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Нет категорий</span>
+                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Нет выбранных категорий</span>
                                   )}
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })
-                      ))}
-                      {Object.keys(filteredGroups).length === 0 && (
-                        <tr>
-                          <td colSpan={2} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-secondary)' }}>
-                            Ничего не найдено по вашему запросу.
-                          </td>
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        ))}
+                        {Object.keys(filteredGroups).length === 0 && (
+                          <tr>
+                            <td colSpan={maxCardsCount + 1} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-secondary)' }}>
+                              Ничего не найдено по вашему запросу.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile version - Two columns vertical style */}
+                  <div className={styles.mobileReport} style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border-color)', marginTop: '12px' }}>
+                    <table className={styles.reportTable}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid var(--border-color)', color: 'var(--text-secondary)' }}>
+                          <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', fontSize: '13px', background: 'var(--bg-primary)' }}>Банк</th>
+                          <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: '600', fontSize: '13px' }}>Карта и Категории</th>
                         </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {Object.entries(filteredGroups).map(([bankName, cards]) => (
+                          cards.map((card, idx) => {
+                            const cardName = card.customName || "Основная карта";
+                            const logo = card.logo || "🏦";
+                            return (
+                              <tr key={`${bankName}-${card.cardId || idx}`} style={{ borderBottom: '1px solid var(--divider-color)' }}>
+                                {idx === 0 && (
+                                  <td 
+                                    rowSpan={cards.length} 
+                                    style={{ 
+                                      padding: '12px 12px', 
+                                      fontWeight: '700', 
+                                      color: 'var(--text-primary)', 
+                                      verticalAlign: 'top', 
+                                      width: '35%',
+                                      background: 'var(--bg-primary)'
+                                    }}
+                                  >
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                      <span style={{ fontSize: '18px' }}>{logo}</span>
+                                      <span>{bankName}</span>
+                                    </div>
+                                  </td>
+                                )}
+                                <td style={{ padding: '12px 12px', verticalAlign: 'top', borderLeft: `4px solid ${card.color || 'var(--color-primary)'}` }}>
+                                  <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '8px', fontSize: '13px' }}>
+                                    💳 {cardName}
+                                  </div>
+                                  <div>
+                                    {card.categories && card.categories.length > 0 ? (
+                                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-start' }}>
+                                        {card.categories.map((cat, catIdx) => (
+                                          <div key={catIdx} style={{ margin: '2px 0' }}>
+                                            <span style={{ 
+                                              background: '#eff6ff', 
+                                              color: '#1d4ed8', 
+                                              padding: '3px 8px', 
+                                              borderRadius: '6px', 
+                                              fontSize: '11px', 
+                                              fontWeight: '600', 
+                                              display: 'inline-block' 
+                                            }}>
+                                              {cat.percent}% {cat.name}
+                                            </span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Нет категорий</span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })
+                        ))}
+                        {Object.keys(filteredGroups).length === 0 && (
+                          <tr>
+                            <td colSpan={2} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-secondary)' }}>
+                              Ничего не найдено по вашему запросу.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               );
             })()}
           </div>

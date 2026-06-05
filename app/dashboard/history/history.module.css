@@ -95,3 +95,20 @@
   border-bottom: none;
 }
 
+.desktopReport {
+  display: block;
+}
+
+.mobileReport {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .desktopReport {
+    display: none !important;
+  }
+  .mobileReport {
+    display: block !important;
+  }
+}
+
