@@ -72,6 +72,18 @@ export default function DashboardPage() {
     fetchProfileAndReport();
   }, [user]);
 
+  useEffect(() => {
+    if (!loadingReport && latestReport && typeof window !== 'undefined' && window.location.hash === '#report') {
+      const timer = setTimeout(() => {
+        const element = document.getElementById('report');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loadingReport, latestReport]);
+
   const getGroups = (report) => {
     if (!report) return {};
     const userBanks = report.userBanks || [];
@@ -316,7 +328,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Monthly Summary */}
-      <div className={styles.summaryCard}>
+      <div className={styles.summaryCard} id="report">
         {loadingReport ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
             <div className="spinner"></div>
