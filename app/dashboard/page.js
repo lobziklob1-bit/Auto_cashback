@@ -350,14 +350,6 @@ export default function DashboardPage() {
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
-                <input
-                  type="text"
-                  className="input"
-                  placeholder="🔍 Поиск по банкам, картам или категориям..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ maxWidth: '300px', width: '100%', padding: '6px 10px', fontSize: '12px' }}
-                />
                  <button
                    className="btn btn-primary btn-sm"
                    onClick={() => handleImportToGlide(latestReport)}
@@ -366,6 +358,14 @@ export default function DashboardPage() {
                  >
                    📤 Импорт в Glide CRM
                  </button>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="🔍 Поиск по банкам, картам или категориям..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{ maxWidth: '300px', width: '100%', padding: '6px 10px', fontSize: '12px' }}
+                />
               </div>
             </div>
 
