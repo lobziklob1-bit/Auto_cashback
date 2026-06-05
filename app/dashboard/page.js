@@ -115,42 +115,6 @@ export default function DashboardPage() {
     return groups;
   };
 
-  const handleCopyToClipboard = (report) => {
-    if (!report) return;
-
-    const groups = getGroups(report);
-    const maxCardsCount = Math.max(...Object.values(groups).map(g => g.length), 1);
-
-    let tsvContent = '';
-
-    Object.entries(groups).forEach(([bankName, cards]) => {
-      let row = `"${bankName.replace(/"/g, '""')}"`;
-      
-      for (let i = 0; i < maxCardsCount; i++) {
-        const card = cards[i];
-        if (card) {
-          let cardCell = `${card.customName}\n`;
-          if (card.categories && card.categories.length > 0) {
-            cardCell += card.categories.map(cat => `${cat.percent}% ${cat.name}`).join('\n');
-          } else {
-            cardCell += 'Нет выбранных категорий';
-          }
-          row += `\t"${cardCell.replace(/"/g, '""')}"`;
-        } else {
-          row += '\t""';
-        }
-      }
-      tsvContent += row + '\n';
-    });
-
-    navigator.clipboard.writeText(tsvContent)
-      .then(() => {
-        showNotification('Данные таблицы скопированы в буфер обмена для CRM Glide! 📋', 'success');
-      })
-      .catch(err => {
-        showNotification('Не удалось скопировать данные: ' + err.message, 'error');
-      });
-  };
 
   const generateReportHtml = (report) => {
     const groups = getGroups(report);
@@ -394,14 +358,6 @@ export default function DashboardPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ maxWidth: '300px', width: '100%', padding: '6px 10px', fontSize: '12px' }}
                 />
-                 <button
-                   className="btn btn-secondary btn-sm"
-                   onClick={() => handleCopyToClipboard(latestReport)}
-                   style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                   title="Скопировать TSV-таблицу для ручной вставки в CRM Glide (на ПК)"
-                 >
-                   📋 Копировать TSV
-                 </button>
                  <button
                    className="btn btn-primary btn-sm"
                    onClick={() => handleImportToGlide(latestReport)}
