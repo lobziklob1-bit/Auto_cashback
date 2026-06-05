@@ -179,6 +179,53 @@ export default function DashboardPage() {
     return html;
   };
 
+  // Очистка URL от старых параметров, чтобы избежать разрастания ссылки
+  const cleanGlideUrl = (url) => {
+    try {
+      const parsed = new URL(url);
+      parsed.searchParams.delete('report_data');
+      parsed.searchParams.delete('report_html');
+      return parsed.toString().replace(/\/$/, '');
+    } catch (e) {
+      return url.split('?')[0].replace(/\/$/, '');
+    }
+  };
+
+  // Кодирование UTF-8 строки в безопасный Base64 для URL
+  const encodeBase64Url = (str) => {
+    const b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    const bytes = [];
+    for (let i = 0; i < str.length; i++) {
+      let code = str.charCodeAt(i);
+      if (code < 0x80) {
+        bytes.push(code);
+      } else if (code < 0x800) {
+        bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
+      } else if (code < 0xd800 || code >= 0xe000) {
+        bytes.push(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
+      } else {
+        i++;
+        code = 0x10000 + (((code & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff));
+        bytes.push(0xf0 | (code >> 18), 0x80 | ((code >> 12) & 0x3f), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
+      }
+    }
+    let result = '';
+    let i = 0;
+    while (i < bytes.length) {
+      const b1 = bytes[i++];
+      const b2 = i < bytes.length ? bytes[i++] : NaN;
+      const b3 = i < bytes.length ? bytes[i++] : NaN;
+      const c1 = b1 >> 2;
+      const c2 = ((b1 & 3) << 4) | (isNaN(b2) ? 0 : b2 >> 4);
+      const c3 = isNaN(b2) ? 64 : ((b2 & 15) << 2) | (isNaN(b3) ? 0 : b3 >> 6);
+      const c4 = isNaN(b3) ? 64 : b3 & 63;
+      result += b64chars.charAt(c1) + b64chars.charAt(c2) +
+                (c3 === 64 ? '' : b64chars.charAt(c3)) +
+                (c4 === 64 ? '' : b64chars.charAt(c4));
+    }
+    return result;
+  };
+
   const handleImportToGlide = (report) => {
     if (!report) return;
 
@@ -187,6 +234,7 @@ export default function DashboardPage() {
     
     // Пытаемся получить сохраненную ссылку, если её нет — используем дефолтную
     let glideUrl = localStorage.getItem('glide_app_url') || defaultUrl;
+    glideUrl = cleanGlideUrl(glideUrl);
 
     // Даем пользователю возможность подтвердить/изменить ссылку
     const confirmChange = confirm(`Импортировать отчет за ${report.monthName} в Glide CRM?\n\nИспользуется ссылка:\n${glideUrl}\n\n(Чтобы изменить ссылку, нажмите Отмена, и в следующем окне введите новую. Для продолжения нажмите ОК)`);
@@ -194,7 +242,7 @@ export default function DashboardPage() {
     if (!confirmChange) {
       const newUrl = prompt('Введите новый URL страницы импорта Glide CRM:', glideUrl);
       if (newUrl && newUrl.trim()) {
-        glideUrl = newUrl.trim();
+        glideUrl = cleanGlideUrl(newUrl.trim());
         localStorage.setItem('glide_app_url', glideUrl);
       } else {
         return; // Отмена импорта
@@ -221,12 +269,12 @@ export default function DashboardPage() {
       g: compressedGroups
     };
 
-    // Кодируем JSON для безопасной передачи в URL
-    const encodedJson = encodeURIComponent(JSON.stringify(reportData));
+    // Кодируем JSON в Base64 URL-safe
+    const encodedData = encodeBase64Url(JSON.stringify(reportData));
     
     // Формируем итоговую ссылку
     const separator = glideUrl.includes('?') ? '&' : '?';
-    const finalUrl = `${glideUrl}${separator}report_data=${encodedJson}`;
+    const finalUrl = `${glideUrl}${separator}report_data=${encodedData}`;
 
     // Перенаправляем пользователя
     window.open(finalUrl, '_blank');
