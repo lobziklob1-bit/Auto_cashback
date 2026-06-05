@@ -201,34 +201,24 @@ export default function DashboardPage() {
       }
     }
 
-    // Собираем TSV для передачи
+    // Сжимаем данные для исключения ошибки 414 (Request-URI Too Large)
     const groups = getGroups(report);
-    const maxCardsCount = Math.max(...Object.values(groups).map(g => g.length), 1);
-    let tsvContent = '';
+    const compressedGroups = {};
     Object.entries(groups).forEach(([bankName, cards]) => {
-      let row = `"${bankName.replace(/"/g, '""')}"`;
-      for (let i = 0; i < maxCardsCount; i++) {
-        const card = cards[i];
-        if (card) {
-          let cardCell = `${card.customName}\n`;
-          if (card.categories && card.categories.length > 0) {
-            cardCell += card.categories.map(cat => `${cat.percent}% ${cat.name}`).join('\n');
-          } else {
-            cardCell += 'Нет выбранных категорий';
-          }
-          row += `\t"${cardCell.replace(/"/g, '""')}"`;
-        } else {
-          row += '\t""';
-        }
-      }
-      tsvContent += row + '\n';
+      compressedGroups[bankName] = cards.map(card => ({
+        n: card.customName || "Основная карта",
+        l: card.logo || "🏦",
+        c: (card.categories || []).map(cat => ({
+          p: cat.percent,
+          n: cat.name
+        }))
+      }));
     });
 
-    // Формируем JSON-пакет данных
+    // Формируем компактный JSON-пакет данных
     const reportData = {
-      month: report.monthName || "Отчет",
-      html: generateReportHtml(report),
-      tsv: tsvContent
+      m: report.monthName || "Отчет",
+      g: compressedGroups
     };
 
     // Кодируем JSON для безопасной передачи в URL

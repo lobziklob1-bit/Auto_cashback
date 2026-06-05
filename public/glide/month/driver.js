@@ -8,7 +8,7 @@ window.addEventListener("message", function(event) {
     
     if (p1) {
       const data = JSON.parse(p1);
-      result = data.month || "";
+      result = data.m || "";
     }
   } catch (e) {
     result = "";
