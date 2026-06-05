@@ -112,7 +112,7 @@ export default function HistoryPage() {
       cards.forEach((card, idx) => {
         const cardName = card.customName || "Основная карта";
         const categoriesText = card.categories && card.categories.length > 0 
-          ? card.categories.map(cat => `<span style="background: #eff6ff; color: #1d4ed8; padding: 2px 5px; border-radius: 4px; font-size: 10.5px; font-weight: 600; display: inline-block; margin: 2px 1px;">${cat.percent}% ${cat.name}</span>`).join(' ')
+          ? card.categories.map(cat => `<div style="margin: 4px 0;"><span style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; display: inline-block;">${cat.percent}% ${cat.name}</span></div>`).join('')
           : `<span style="color: #94a3b8; font-size: 10.5px;">Нет категорий</span>`;
         
         html += `<tr style="border-bottom: 1px solid #f1f5f9;">`;
