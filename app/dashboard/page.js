@@ -240,9 +240,14 @@ export default function DashboardPage() {
     const separator = glideUrl.includes('?') ? '&' : '?';
     const finalUrl = `${glideUrl}${separator}report_data=${encodedData}`;
 
-    // Перенаправляем пользователя
-    window.open(finalUrl, '_blank');
-    showNotification('Перенаправление в Glide CRM... 🚀', 'success');
+    // Копируем ссылку в буфер обмена вместо открытия страницы
+    navigator.clipboard.writeText(finalUrl)
+      .then(() => {
+        showNotification('Ссылка для импорта скопирована! 📋 Вставьте её в приложении Glide.', 'success');
+      })
+      .catch(err => {
+        showNotification('Ошибка копирования: ' + err.message, 'error');
+      });
   };
 
   if (!user || !profile) {
