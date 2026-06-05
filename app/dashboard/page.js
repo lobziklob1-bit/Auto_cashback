@@ -143,15 +143,83 @@ export default function DashboardPage() {
     return html;
   };
 
+  // Кодирование UTF-8 строки в безопасный Base64 для URL
+  const encodeBase64Url = (str) => {
+    const b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    const bytes = [];
+    for (let i = 0; i < str.length; i++) {
+      let code = str.charCodeAt(i);
+      if (code < 0x80) {
+        bytes.push(code);
+      } else if (code < 0x800) {
+        bytes.push(0xc0 | (code >> 6), 0x80 | (code & 0x3f));
+      } else if (code < 0xd800 || code >= 0xe000) {
+        bytes.push(0xe0 | (code >> 12), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
+      } else {
+        i++;
+        code = 0x10000 + (((code & 0x3ff) << 10) | (str.charCodeAt(i) & 0x3ff));
+        bytes.push(0xf0 | (code >> 18), 0x80 | ((code >> 12) & 0x3f), 0x80 | ((code >> 6) & 0x3f), 0x80 | (code & 0x3f));
+      }
+    }
+    let result = '';
+    let i = 0;
+    while (i < bytes.length) {
+      const b1 = bytes[i++];
+      const b2 = i < bytes.length ? bytes[i++] : NaN;
+      const b3 = i < bytes.length ? bytes[i++] : NaN;
+      const c1 = b1 >> 2;
+      const c2 = ((b1 & 3) << 4) | (isNaN(b2) ? 0 : b2 >> 4);
+      const c3 = isNaN(b2) ? 64 : ((b2 & 15) << 2) | (isNaN(b3) ? 0 : b3 >> 6);
+      const c4 = isNaN(b3) ? 64 : b3 & 63;
+      result += b64chars.charAt(c1) + b64chars.charAt(c2) +
+                (c3 === 64 ? '' : b64chars.charAt(c3)) +
+                (c4 === 64 ? '' : b64chars.charAt(c4));
+    }
+    return result;
+  };
+
   const handleImportToGlide = (report) => {
     if (!report) return;
-
     const html = generateReportHtml(report);
-
-    // Копируем готовый HTML-код в буфер обмена
     navigator.clipboard.writeText(html)
       .then(() => {
-        showNotification('HTML-код отчета скопирован! 📋 Вставьте его в Rich Text в Glide.', 'success');
+        showNotification('HTML-отчет скопирован в буфер обмена! 📋', 'success');
+      })
+      .catch(err => {
+        showNotification('Ошибка копирования: ' + err.message, 'error');
+      });
+  };
+
+  const handleCopyBase64ForGlide = (report) => {
+    if (!report) return;
+
+    // Сжимаем данные
+    const groups = getGroups(report);
+    const compressedGroups = {};
+    Object.entries(groups).forEach(([bankName, cards]) => {
+      compressedGroups[bankName] = cards.map(card => ({
+        n: card.customName || "Основная карта",
+        l: card.logo || "🏦",
+        c: (card.categories || []).map(cat => ({
+          p: cat.percent,
+          n: cat.name
+        }))
+      }));
+    });
+
+    // Формируем компактный JSON-пакет данных
+    const reportData = {
+      m: report.monthName || "Отчет",
+      g: compressedGroups
+    };
+
+    // Кодируем JSON в Base64 URL-safe
+    const encodedData = encodeBase64Url(JSON.stringify(reportData));
+
+    // Копируем сжатый код отчета в буфер обмена
+    navigator.clipboard.writeText(encodedData)
+      .then(() => {
+        showNotification('Код для поиска скопирован! 📋 Вставьте его в Glide в поле ввода.', 'success');
       })
       .catch(err => {
         showNotification('Ошибка копирования: ' + err.message, 'error');
@@ -270,6 +338,14 @@ export default function DashboardPage() {
                     title="Скопировать HTML-код отчета для вставки в Rich Text компонент Glide"
                   >
                     📋 Копировать для Glide
+                  </button>
+                  <button
+                    className="btn btn-sm"
+                    onClick={() => handleCopyBase64ForGlide(latestReport)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#10b981', borderColor: '#10b981', color: '#ffffff' }}
+                    title="Скопировать сжатый код отчета для работы поиска по категориям в Glide"
+                  >
+                    🔍 Копировать код поиска (Glide)
                   </button>
                 <input
                   type="text"
