@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { getUserProfile, saveMonthlyReport, getBanksMccRef } from '@/lib/firestore';
+import { getUserProfile, saveMonthlyReport, getBanksMccRef, getDraftOffers, saveDraftOffers } from '@/lib/firestore';
 import { analyzeScreenshot } from '@/lib/ai';
 import { optimizeCashback } from '@/lib/analyzer';
 import { MCC_CATEGORIES } from '@/lib/constants';
@@ -32,7 +32,7 @@ export default function AnalyzePage() {
 
   const currentMonthName = new Date().toLocaleString('ru-RU', { month: 'long', year: 'numeric' });
 
-  // Загрузка банков пользователя и справочника MCC
+  // Загрузка банков пользователя и справочника MCC с восстановлением черновика
   useEffect(() => {
     async function loadData() {
       if (!user) return;
@@ -45,12 +45,32 @@ export default function AnalyzePage() {
         banksList.sort((a, b) => (a.priority || 0) - (b.priority || 0));
         setUserBanks(banksList);
 
-        // Инициализируем пустые списки категорий для каждого банка
-        const initialOffers = {};
+        // Инициализируем пустые списки категорий для каждого банка по умолчанию
+        const defaultOffers = {};
         banksList.forEach(bank => {
-          initialOffers[bank.id] = bank.categories || [];
+          defaultOffers[bank.id] = bank.categories || [];
         });
-        setBankOffers(initialOffers);
+
+        // Пытаемся загрузить черновик текущего месяца
+        try {
+          const draftRes = await getDraftOffers(user.uid);
+          const currentYearMonth = getCurrentYearMonth();
+          if (draftRes.success && draftRes.data && draftRes.data.month === currentYearMonth) {
+            const draftOffers = draftRes.data.offers || {};
+            // Дополняем черновик банками, которых в нем еще нет (если пользователь добавил новые банки)
+            banksList.forEach(bank => {
+              if (!draftOffers[bank.id]) {
+                draftOffers[bank.id] = bank.categories || [];
+              }
+            });
+            setBankOffers(draftOffers);
+          } else {
+            setBankOffers(defaultOffers);
+          }
+        } catch (err) {
+          console.error('Error loading draft offers:', err);
+          setBankOffers(defaultOffers);
+        }
       }
 
       // Загружаем динамический справочник MCC
@@ -67,6 +87,17 @@ export default function AnalyzePage() {
     }
     loadData();
   }, [user]);
+
+  // Автосохранение черновика предложений в Firestore при изменениях
+  useEffect(() => {
+    if (loading || !user || Object.keys(bankOffers).length === 0) return;
+
+    const timer = setTimeout(async () => {
+      await saveDraftOffers(user.uid, getCurrentYearMonth(), bankOffers);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [bankOffers, user, loading]);
 
 
   // Обработка загрузки файла
